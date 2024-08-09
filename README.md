@@ -15,13 +15,12 @@ Some images of website
 
 
 
-# Project Title
 
-![Project Thumbnail](thumbnail-image-url.png)
+
 
 ## Video Demo
 
-[![Watch the video](Flavor-Feast-website-main/static/image/2024-08-08%2023-52-07.mkv)
+[![Watch the video]()
 
 
 
