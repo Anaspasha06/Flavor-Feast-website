@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/static/signstyle.css"> 
+    <link rel="icon" href="image/short_icon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+</head>
+<body>
+    <div id="loading-screen">
+        <img src="/static/image/loading3.gif" alt="Loading...">
+    </div>
+    <div class="hero">
+        <div class="message-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul class="flash-messages">
+                {% for category, message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </div>
+        <div class="login_form">
+            <h1>Register</h1>
+            <form class="input_box" id="signupForm" method="POST" action="{{ url_for('signup') }}">
+                <input type="text" class="field" id="name" name="username" placeholder="Username" required>
+                <input type="email" class="field" id="email" name="email" placeholder="Email" required>
+                <input type="password" class="field" id="password" name="password" placeholder="Password" maxlength="10" autocomplete="new-password" required>
+                <div class="password-strength">
+                    <div class="strength-bar" id="bar-0"></div>
+                    <div class="strength-bar" id="bar-1"></div>
+                    <div class="strength-bar" id="bar-2"></div>
+                </div>
+                <p id="password-strength-text"></p>
+                <p id="email-error" style="color: red;"></p>
+                <input type="checkbox" class="check_box" id="remember"> 
+                <label for="remember">Remember Password</label>
+                <button type="submit" class="submit_btn" disabled id="registerBtn">Register</button>
+                <div class="social_icon">
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-google"></i>
+                </div>
+                <div class="tag">
+                    <span>Already have an account?</span>
+                    <a href="{{ url_for('login') }}">Log in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function validateEmail() {
+            var email = document.getElementById('email').value;
+            var emailError = document.getElementById('email-error');
+    
+            if (email.endsWith('@gmail.com')) {
+                emailError.textContent = '';
+                return true;
+            } else {
+                emailError.textContent = 'Email must end with @gmail.com';
+                return false;
+            }
+        }
+    
+        function validatePassword() {
+            var password = document.getElementById('password').value;
+            var result = zxcvbn(password);
+            var strengthText = document.getElementById('password-strength-text');
+            var bars = document.getElementsByClassName('strength-bar');
+    
+            // Reset the bars
+            for (var i = 0; i < bars.length; i++) {
+                bars[i].style.backgroundColor = 'lightgray';
+            }
+    
+            if (result.score < 2) {
+                strengthText.textContent = 'Password is too weak';
+                strengthText.className = 'weak';
+                bars[0].style.backgroundColor = 'red';
+                return false;
+            } else if (result.score < 3) {
+                strengthText.textContent = 'Password is medium';
+                strengthText.className = 'medium';
+                bars[0].style.backgroundColor = 'yellow';
+                bars[1].style.backgroundColor = 'yellow';
+                return false;
+            } else {
+                strengthText.textContent = 'Password is strong';
+                strengthText.className = 'strong';
+                bars[0].style.backgroundColor = 'green';
+                bars[1].style.backgroundColor = 'green';
+                bars[2].style.backgroundColor = 'green';
+                return true;
+            }
+        }
+    
+        function validateForm() {
+            var isEmailValid = validateEmail();
+            var isPasswordValid = validatePassword();
+            var registerBtn = document.getElementById('registerBtn');
+    
+            // Enable the register button only if both conditions are met
+            if (isEmailValid && isPasswordValid) {
+                registerBtn.disabled = false;
+            } else {
+                registerBtn.disabled = true;
+            }
+        }
+    
+        document.getElementById('email').addEventListener('input', validateForm);
+        document.getElementById('password').addEventListener('input', validateForm);
+    
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.display = 'flex';
+            var loadingDuration = 2000;
+            setTimeout(function() {
+                document.getElementById('signupForm').submit();
+            }, loadingDuration);
+        });
+    </script>
+    
+</body>
+</html>

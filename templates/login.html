@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" href="{{ url_for('static', filename='image/short_icon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/static/loginstyle.css">
+</head>
+<body>
+
+    <div id="loading-screen" style="display: none;">
+        <div class="loader">
+            <img src="/static/image/loading3.gif" alt="Loading...">
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="message-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <ul class="flash-messages">
+                {% for category, message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+        </div>
+
+        <div class="login_form">
+            <h1>Login</h1>
+            <form class="input_box" action="{{ url_for('login') }}" method="POST" id="auth-form">
+                <input type="text" class="field" name="username" placeholder="Username" required>
+                <input type="password" class="field" name="password" maxlength="10" placeholder="Password" required>
+
+                <div class="check_box">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember Password</label>
+                </div>
+
+                <button type="submit" class="submit_btn">Login</button>
+
+                <div class="social_icon">
+                    <i class="fa-brands fa-facebook-f"></i>
+                    <i class="fa-brands fa-twitter"></i>
+                    <i class="fa-brands fa-google"></i>
+                </div>
+
+                <div class="tag">
+                    <span>New User?</span>
+                    <a href="{{ url_for('signup') }}">Sign Up</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('auth-form');
+        form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        var loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.style.display = 'flex';
+
+        // Set the duration for the loading screen in milliseconds
+        var loadingDuration = 2000; // 3000 milliseconds = 3 seconds
+
+        setTimeout(function() {
+            form.submit(); // Submit the form after the loading duration
+        }, loadingDuration);
+    });
+});
+
+    </script>
+
+</body>
+</html>

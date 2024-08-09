@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/orderstyle.css">
+    <title>Order Now</title>
+</head>
+<body>
+
+    <!-- Order -->
+
+    <div class="order" id="Order">
+        <h1><span>Order</span> Now</h1>
+
+        <div class="order_main">
+
+            <div class="order_image">
+                <img src="/static/image/order_image.png" alt="Order Image">
+            </div>
+
+            <form action="{{ url_for('order') }}" method="POST" onsubmit="validateForm(event)">
+
+                <div class="input">
+                    <p><b>Name</b></p>
+                    <input type="text" name="name" placeholder="Your name" required>
+                </div>
+
+                <div class="input">
+                    <p><b>Email</b></p>
+                    <input type="email" name="email" placeholder="Your email" required>
+                </div>
+
+                <div class="input">
+                    <p><b>Number</b></p>
+                    <input type="text" name="number" placeholder="Your number" required>
+                </div>
+
+                <div class="input">
+                    <p><b>How Much</b></p>
+                    <input type="number" name="quantity" id="quantity" placeholder="How many orders" required>
+                </div>
+
+                <div class="input">
+                    <p><b>Your Order</b></p>
+                    <input type="text" name="order" id="order" placeholder="Food name" required oninput="calculateTotal()">
+                </div>
+
+                <div class="input">
+                    <p><b>Address</b></p>
+                    <input type="text" name="address" placeholder="Your address" required>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="input">
+                    <p><b>Payment Method</b></p>
+                    <p id="padding-right">Cash on delivery</p>
+                    <div class="checkbox-wrapper">
+                        <input id="paymentCheckbox" type="checkbox">
+                        <label for="paymentCheckbox">
+                            <div class="tick_mark"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- New Listbox -->
+                <div class="input">
+                    <p><b>Do you want a different item?</b></p>
+                    <select id="differentItemSelect" class="styled-select" onchange="toggleAdditionalInput()">
+                        <option value="no"><b>No</b></option>
+                        <option value="yes"><b>Yes</b></option>
+                    </select>
+                </div>
+
+                <!-- Additional Input Box -->
+                <div class="input" id="additionalItemInput" style="display: none;">
+                    <p><b>Additional Item</b></p>
+                    <input type="text" name="additional_item" id="additional_item" placeholder="Enter additional item" oninput="calculateTotal()">
+                </div>
+
+                <div class="input">
+                    <p id="totalPriceContainer">
+                        Total Price: ₹<span id="totalPrice">0.00</span>
+                    </p>
+                </div>
+                <input type="hidden" name="total_price" id="total_price">
+
+                <button type="submit" class="order_btn">Order Now</button>
+                <button type="button" class="cancel-btn" onclick="cancelOrder()">Cancel</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+<script>
+    const prices = {
+        'pizza': 100.00,
+        'burger': 75.00,
+        'pasta': 60.00,
+        'lasagna': 150.00,
+        'hot dog': 75.00,
+        'biryani': 80.00,
+        'sandwich': 60.00,
+        'spanchi': 60.00,
+        'ice cream': 65.00,
+        'chocolate cake': 30.00,
+        'fruit juse': 50.00,
+        'chocolate shake': 100.00
+    };
+
+    function calculateTotal() {
+        const orderInput = document.getElementById('order').value.trim().toLowerCase();
+        const quantity = parseInt(document.getElementById('quantity').value) || 0;
+        const price = prices[orderInput] || 0;
+        const totalPrice = price * quantity;
+
+        // Check if additional item is present and calculate its price
+        const additionalItemInput = document.getElementById('additional_item').value.trim().toLowerCase();
+
+        // Check for duplicate items
+        if (orderInput && additionalItemInput && orderInput === additionalItemInput) {
+            alert('The same item cannot be ordered twice.');
+            document.getElementById('totalPrice').textContent = '0.00';
+            document.getElementById('total_price').value = '0.00';  // Set hidden input to 0.00
+            return;
+        }
+
+        const additionalPrice = prices[additionalItemInput] || 0;
+        const additionalTotalPrice = additionalPrice * quantity;
+
+        // If additional item is present, add its total price to the main total price
+        const finalTotalPrice = totalPrice + (additionalItemInput && additionalPrice ? additionalTotalPrice : 0);
+        document.getElementById('totalPrice').textContent = finalTotalPrice.toFixed(2);
+        document.getElementById('total_price').value = finalTotalPrice.toFixed(2);  // Set hidden input value
+    }
+
+    function toggleAdditionalInput() {
+        const differentItemSelect = document.getElementById('differentItemSelect').value;
+        const additionalItemInput = document.getElementById('additionalItemInput');
+
+        if (differentItemSelect === 'yes') {
+            additionalItemInput.style.display = 'block';
+        } else {
+            additionalItemInput.style.display = 'none';
+            document.getElementById('additional_item').value = '';  // Clear the additional item input
+            calculateTotal();  // Recalculate the total price
+        }
+    }
+
+    function validateForm(event) {
+        const paymentCheckbox = document.getElementById('paymentCheckbox').checked;
+        const orderInput = document.getElementById('order').value.trim().toLowerCase();
+        const additionalItemInput = document.getElementById('additional_item').value.trim().toLowerCase();
+
+        if (!paymentCheckbox) {
+            alert('You must accept Cash on Delivery to place the order.');
+            event.preventDefault();
+            return;
+        }
+
+        if (orderInput && additionalItemInput && orderInput === additionalItemInput) {
+            alert('The same item cannot be ordered twice.');
+            event.preventDefault();
+            return;
+        }
+    }
+
+    document.getElementById('quantity').addEventListener('input', calculateTotal);
+    document.getElementById('order').addEventListener('input', calculateTotal);
+    document.getElementById('additional_item').addEventListener('input', calculateTotal);
+    document.getElementById('differentItemSelect').addEventListener('change', toggleAdditionalInput);
+
+</script>
+
+</body>
+</html>

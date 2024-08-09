@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liked Items</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Liked Items</h1>
+        {% if liked_items %}
+            <ul class="liked-items-list">
+                {% for like in liked_items %}
+                    <li>
+                        <div class="item">
+                            <p>Item ID: {{ like.item_id }}</p>
+                            <!-- Include more item details as needed -->
+                            <button class="unlike-button" data-item-id="{{ like.item_id }}">Unlike</button>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't liked any items yet.</p>
+        {% endif %}
+        <a href="{{ url_for('start') }}">Back to Home</a>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.unlike-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const itemId = button.dataset.itemId;
+                
+                fetch('/unlike', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ item_id: itemId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        button.closest('li').remove();
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+    </script>
+</body>
+</html>
