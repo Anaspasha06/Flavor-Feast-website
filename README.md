@@ -21,7 +21,7 @@ Some images of website
 
 ## Video Demo
 
-[![Watch the video](Flavor-Feast-website-main\static\image)
+[![Watch the video](Flavor-Feast-website-main/static/image/2024-08-08%2023-52-07.mkv)
 
 
 
